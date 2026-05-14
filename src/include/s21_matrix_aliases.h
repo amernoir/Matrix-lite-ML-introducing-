@@ -9,11 +9,16 @@
 #define S21_MATRIX_ALIASES_H
 
 #define S21_OK          0  //  успешное выполнение
-#define S21_ERROR       1  //  лбщая ошибка (некорректная матрица и т.д.)
+#define S21_ERROR       1  //  общая ошибка (некорректная матрица и т.д.)
 #define S21_CALC_ERROR  2  //  ошибка вычисления (вырожденная матрица)
 
+#define S21_INCORRECT_MATRIX  S21_ERROR
+
+#define SUCCESS 1 
+#define FAILURE 0
 #define S21_TRUE        1
 #define S21_FALSE       0
+#define S21_FAILURE         S21_FALSE
 
 #define S21_EPS_ABS     1e-6   //  абсолютный допуск, если числа отличаются меньше чем на 1*10^-6, то они равны 
 #define S21_EPS_REL     1e-6   //  relative-относительный допуск, считает разницу в 0.0001% от числа
