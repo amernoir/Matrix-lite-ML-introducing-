@@ -87,7 +87,7 @@ int s21_sum_matrix(const matrix_t *A, const matrix_t *B, matrix_t *result);
  * @return 0 - OK, 1 - ошибка, 2 - ошибка вычисления
  */
 
- int s21_mult_matrix(const matrix_t *A, const matrix_t *B, matrix_t *result);
+ int s21_mult_matrix_basic(const matrix_t *A, const matrix_t *B, matrix_t *result);
 
  /**
  * @brief Умножение матрицы на число

@@ -1,5 +1,5 @@
     /**
-    * @file s21_matrix_func_declare.h
+    * @file s21_matrix_private.h
     * @brief ВНУТРЕННИЕ функции библиотеки, не для пользования пользователем 
     * @details header file для вспомогательных функций, предназначенных 
     * для реализации матричных операций
@@ -10,6 +10,7 @@
     #define S21_MATRIX_PRIVATE_H
 
     #include "s21_matrix_types.h"
+    #include "utils.h"
 
     /**
     * @brief создание матрицы
@@ -86,4 +87,52 @@ void matrix_fill_minor_buffer(const matrix_t *A, int n, int row, int col,
     int matrix_apply_unary(const matrix_t *A, matrix_t *result,
                         double (*op)(double, double), double param);
 
-    #endif
+    /**
+ * @brief Проверка корректности матрицы (возвращает S21_OK/S21_INCORRECT_MATRIX)
+ * @param A указатель на матрицу
+ * @return S21_OK - корректна, S21_INCORRECT_MATRIX - некорректна
+ */
+int checking_arg(const matrix_t* A);
+
+/**
+ * @brief Копирование матрицы (целевая уже должна быть создана)
+ * @param src исходная матрица
+ * @param dst целевая матрица
+ * @return S21_OK - успех, S21_INCORRECT_MATRIX - ошибка
+ */
+int s21_copy_matrix(const matrix_t* src, matrix_t* dst);
+
+/**
+ * @brief Создание двух матриц с откатом при ошибке
+ * @param a_rows, a_cols размеры матрицы A
+ * @param A указатель на первую матрицу
+ * @param b_rows, b_cols размеры матрицы B
+ * @param B указатель на вторую матрицу
+ * @return S21_OK - успех, S21_INCORRECT_MATRIX - ошибка
+ */
+int two_matrix_create(const int a_rows, const int a_cols, matrix_t* A,
+                      const int b_rows, const int b_cols, matrix_t* B);
+
+/**
+ * @brief Сравнение матриц с заданной точностью
+ * @param A первая матрица
+ * @param B вторая матрица
+ * @param eps точность сравнения
+ * @return 1 - равны, 0 - не равны
+ */
+int s21_eq_matrix_with_eps(const matrix_t *A, const matrix_t *B, double eps);
+
+/**
+ * @brief Заполнение всех элементов матрицы значением
+ * @param A матрица
+ * @param value значение для заполнения
+ */
+void s21_fill_matrix(matrix_t *A, double value);
+
+/**
+ * @brief Обнуление всех элементов матрицы
+ * @param A матрица
+ */
+void s21_zero_matrix(matrix_t *A);
+
+#endif // S21_MATRIX_PRIVATE_H

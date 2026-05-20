@@ -7,7 +7,7 @@
  #ifndef UTILS_H
  #define UTILS_H
  
- #include "s21_matrix.h"
+ #include "../s21_matrix.h"
 
  /**
  * @def ABS_VALUE
