@@ -6,10 +6,13 @@
 #include "../s21_matrix.h"
 
 int s21_eq_matrix(const matrix_t *A, const matrix_t *B){
-    if (A == NULL || B == NULL || 
-        A->data == NULL || B->data == NULL ||
-        A->rows != B->rows || A->columns != B->columns) {
-            return FAILURE;
+  
+    if (checking_arg(A) != S21_OK || checking_arg(B) != S21_OK) {
+        return FAILURE;
+    }
+    
+    if(A->rows != B->rows || A->columns != B->columns) {
+        return FAILURE;
     }
 
     if (A == B) return SUCCESS;
