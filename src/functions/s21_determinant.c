@@ -173,7 +173,32 @@ static int determinant_gaussian(const matrix_t *A, double *result) {
                 temp.data[max_row * n + j] = tmp;
             }
         }
-
         
+        for (int i = k + 1; i < n; ++i) {
+            double factor = temp.data[i * n + k] / temp.data[k * n + k]; 
+            for (int j = k; j < n; j++) {
+                temp.data[i * n + j] -= factor * temp.data[k * n + j];
+            }
+        }
     }
+
+    det = (swap_count % 2 == 0) ? 1.0 : -1.0;
+    for (int i = 0; i < n; ++i) {
+        det *= temp.data[i * n + i];
+    }
+
+    *result = det;
+    s21_remove_matrix(&temp);
+
+    return flag;
 }
+
+/** 
+ * @brief Основная функция вычисления определителя
+ */
+
+ int s21_determinant(matrix_t *A, double *result) {
+    if (checking_arg(A) != S21_OK || result == NULL) {
+        return S21_INCORRECT_MATRIX;
+    }
+ }
