@@ -66,5 +66,17 @@ int main() {
     s21_remove_matrix(&result);
     printf("10. Готово!\n");
     
+
+
+    matrix_t C = {0};
+    double result1 = 0;
+
+    s21_create_matrix(4,4,&A);
+    for (int i = 0; i < 4 * 4; ++i){
+        A.data[i] = i + 1;
+    }
+
+    s21_determinant(&A, &result1);
+    s21_remove_matrix(&A);
     return 0;
 }
