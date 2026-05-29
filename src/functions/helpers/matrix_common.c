@@ -34,26 +34,26 @@ int s21_copy_matrix(const matrix_t* src, matrix_t* dst) {
 }
 
 int s21_eq_matrix_with_eps(const matrix_t *A, const matrix_t *B, double eps) {
-    int flag = SUCCESS;
-    
     if (checking_arg(A) != S21_OK || checking_arg(B) != S21_OK) {
-        flag = FAILURE;
-    } else if (A->rows != B->rows || A->columns != B->columns) {
-        flag = FAILURE;
-    } else {
-        int size = A->rows * A->columns;
-        for (int i = 0; i < size && flag == SUCCESS; ++i) {
-            double diff = fabs(A->data[i] - B->data[i]);
-            double rel_diff = fabs(A->data[i] - B->data[i]);
-            double max_val = fmax(fabs(A->data[i]), fabs(B->data[i]));
-            
-            if (diff > S21_EPS_ABS && rel_diff > S21_EPS_REL * max_val) {
-                flag = FAILURE;
-            }
+        return FAILURE;
+    }
+    if (A->rows != B->rows || A->columns != B->columns) {
+        return FAILURE;
+    }
+    
+    int size = A->rows * A->columns;
+    for (int i = 0; i < size; ++i) {
+        double diff = fabs(A->data[i] - B->data[i]);
+        double max_val = fmax(fabs(A->data[i]), fabs(B->data[i]));
+        double rel_diff = (max_val > 0) ? diff / max_val : 0.0;
+        
+        // Абсолютная погрешность ИЛИ относительная погрешность
+        if (diff > eps && rel_diff > eps) {
+            return FAILURE;
         }
     }
     
-    return flag;
+    return SUCCESS;
 }
 
 int two_matrix_create(const int a_rows, const int a_cols, matrix_t *A,

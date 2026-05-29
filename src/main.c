@@ -66,5 +66,25 @@ int main() {
     s21_remove_matrix(&result);
     printf("10. Готово!\n");
     
+
+
+    matrix_t C = {0};
+    double result1 = 0;
+
+    s21_create_matrix(4,4,&A);
+    for (int i = 0; i < 4 * 4; ++i){
+        A.data[i] = i + 1;
+    }
+
+    s21_determinant(&A, &result1);
+    s21_remove_matrix(&A);
     return 0;
+
+
+
+    matrix_t mat = {0};
+s21_create_matrix(3, 3, &mat);  // OK, mat.data выделен
+s21_create_matrix(5, 5, &mat);  // OK, старая память освобождена, новая выделена
+s21_remove_matrix(&mat);         // OK
+s21_remove_matrix(&mat);         // OK, повторный вызов безопасен
 }
