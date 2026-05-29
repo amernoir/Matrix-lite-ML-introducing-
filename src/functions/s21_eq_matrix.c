@@ -13,7 +13,7 @@ int s21_eq_matrix(const matrix_t *A, const matrix_t *B){
     } else if (A->rows != B->rows || A->columns != B->columns) {
         flag = FAILURE;
     } else if (A == B) {
-        flag = SUCCESS;  // одна и та же матрица
+        flag = SUCCESS;
     } else {
         int size = A->rows * A->columns;
         for (int i = 0; i < size && flag == SUCCESS; ++i) {

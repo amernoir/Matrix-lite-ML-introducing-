@@ -5,8 +5,12 @@
 
 #include "../../s21_matrix.h"
 
+typedef double (*binary_op_t)(double a, double b);
+typedef double (*unary_op_t)(double a);
+typedef double (*unary_op_with_param_t)(double a, double param);
+
 int matrix_apply_binary(const matrix_t *A, const matrix_t *B,
-                        matrix_t *result, binary_op_t op, double param) {
+                        matrix_t *result, binary_op_t op) {
     int flag = S21_OK;
     
     if (checking_arg(A) != S21_OK || checking_arg(B) != S21_OK || result == NULL) {
@@ -18,7 +22,7 @@ int matrix_apply_binary(const matrix_t *A, const matrix_t *B,
     } else {
         int size = A->rows * A->columns;
         for (int i = 0; i < size; ++i) {
-            result->data[i] = op(A->data[i], B->data[i], param);
+            result->data[i] = op(A->data[i], B->data[i]);
         }
     }
     
@@ -26,7 +30,25 @@ int matrix_apply_binary(const matrix_t *A, const matrix_t *B,
 }
 
 int matrix_apply_unary(const matrix_t *A, matrix_t *result,
-                       unary_op_t op, double param) {
+                       unary_op_t op) {
+    int flag = S21_OK;
+    
+    if (checking_arg(A) != S21_OK || result == NULL) {
+        flag = S21_INCORRECT_MATRIX;
+    } else if (s21_create_matrix(A->rows, A->columns, result) != S21_OK) {
+        flag = S21_INCORRECT_MATRIX;
+    } else {
+        int size = A->rows * A->columns;
+        for (int i = 0; i < size; ++i) {
+            result->data[i] = op(A->data[i]);
+        }
+    }
+    
+    return flag;
+}
+
+int matrix_apply_unary_with_param(const matrix_t *A, matrix_t *result,
+                                  unary_op_with_param_t op, double param) {
     int flag = S21_OK;
     
     if (checking_arg(A) != S21_OK || result == NULL) {
@@ -43,7 +65,7 @@ int matrix_apply_unary(const matrix_t *A, matrix_t *result,
     return flag;
 }
 
-int s21_mult_matrix_basic(const matrix_t *A, const matrix_t *B, matrix_t *result) {
+int s21_mult_matrix(const matrix_t *A, const matrix_t *B, matrix_t *result) {
     int flag = S21_OK;
     
     if (checking_arg(A) != S21_OK || checking_arg(B) != S21_OK || result == NULL) {
@@ -51,10 +73,7 @@ int s21_mult_matrix_basic(const matrix_t *A, const matrix_t *B, matrix_t *result
     } else if (A->columns != B->rows) {
         flag = S21_CALC_ERROR;
     } else {
-        if (result->data != NULL) {
-            s21_remove_matrix(result);
-        }
-        
+        // Создаём новую матрицу (result должен быть неинициализирован)
         if (s21_create_matrix(A->rows, B->columns, result) != S21_OK) {
             flag = S21_INCORRECT_MATRIX;
         } else {

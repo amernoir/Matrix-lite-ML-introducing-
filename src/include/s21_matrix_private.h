@@ -1,116 +1,61 @@
-    /**
-    * @file s21_matrix_private.h
-    * @brief ВНУТРЕННИЕ функции библиотеки, не для пользования пользователем 
-    * @details header file для вспомогательных функций, предназначенных 
-    * для реализации матричных операций
-    * @author fairyjac   
-    */
+/**
+* @file s21_matrix_private.h
+* @brief ВНУТРЕННИЕ функции библиотеки, не для пользования пользователем 
+* @details header file для вспомогательных функций, предназначенных 
+* для реализации матричных операций
+* @author fairyjac   
+*/
 
-    #ifndef S21_MATRIX_PRIVATE_H
-    #define S21_MATRIX_PRIVATE_H
+#ifndef S21_MATRIX_PRIVATE_H
+#define S21_MATRIX_PRIVATE_H
 
-    #include "s21_matrix_types.h"
-    #include "utils.h"
+#include "s21_matrix_types.h"
+#include "s21_matrix_aliases.h"
 
-    /**
-    * @brief создание матрицы
-    * @param rows строки
-    * @param columns колонки 
-    * @param result указатель на ячейку памяти размерностью rows * columns
-    * @return - 0 - OK
-    * @return - 1 - error
-    */
-
-    int matrix_allocate(int rows, int columns, matrix_t *result);
-
-    /**
-        * @brief free resource 
-        * @param A pointer to current matrix 
-    */
-
-    void matrix_free(matrix_t *A);
-
-    /**
-    * @brief проверка на корректность матрицы
-    * @param A pointer to current matrix
-    * @return 1 - correct, 0 - uncorrect 
-    */
-
-    int matrix_is_valid(const matrix_t *A);
+// ==================== ПРОВЕРКИ ====================
 
 /**
- * @brief Вычисление минора матрицы (определитель подматрицы)
- * @param A исходная квадратная матрица
- * @param row строка для удаления
- * @param col столбец для удаления
- * @param result указатель на результат (определитель минора)
- * @return S21_OK - успех, S21_INCORRECT_MATRIX - ошибка, S21_CALC_ERROR - ошибка вычисления
+* @brief проверка на корректность матрицы
+* @param A указатель на матрицу
+* @return S21_OK - корректна, S21_INCORRECT_MATRIX - некорректна
+*/
+int checking_arg(const matrix_t *A);
+
+// ==================== ОПЕРАЦИИ С МАТРИЦАМИ ====================
+
+/**
+ * @brief Применение бинарной операции к элементам двух матриц
+ * @param A первая матрица
+ * @param B вторая матрица
+ * @param result результат операции
+ * @param op указатель на функцию операции (a, b) -> значение
+ * @return S21_OK, S21_INCORRECT_MATRIX, S21_CALC_ERROR
  */
-int matrix_minor(const matrix_t *A, int row, int col, double *result);
+int matrix_apply_binary(const matrix_t *A, const matrix_t *B,
+                        matrix_t *result, double (*op)(double, double));
 
 /**
- * @brief Заполнение буфера данными подматрицы (удаление строки и столбца)
+ * @brief Применение унарной операции к элементам матрицы
  * @param A исходная матрица
- * @param n размер исходной подматрицы
- * @param row удаляемая строка (относительно текущего смещения)
- * @param col удаляемый столбец
- * @param buf целевой буфер (row-major)
- * @param buf_offset смещение в буфере
+ * @param result результат операции
+ * @param op указатель на функцию операции (a) -> значение
+ * @return S21_OK, S21_INCORRECT_MATRIX
  */
-void matrix_fill_minor_buffer(const matrix_t *A, int n, int row, int col,
-                              double *buf, int buf_offset);
-
-    /**
-    * @brief копирование матриц
-    * @param src исходная матрица
-    * @param dst целевая матрица
-    * @return 0 - ok, 1 - error 
-    */
-
-    int matrix_copy_data(const matrix_t *src, matrix_t *dst);
-
-    /**
-    * @brief Рекурсивное вычисление определителя
-    * @param A исходная матрица
-    * @param result указатель на результат
-    * @param n размер подматрицы
-    * @param row смещение по строкам
-    * @param col смещение по столбцам
-    * @param buf буфер для подматриц
-    * @param buf_offset смещение в буфере
-    * @return 0 - OK, 1 - ошибка, 2 - ошибка вычисления
-    */
-    int determinant_recursive(const matrix_t *A, double *result, int n,
-                            int row, int col, double *buf, int buf_offset);
-
-    /**
-    * @brief Применение бинарной операции к элементам двух матриц. применение паттерна стратегия 
-    */
-
-    int matrix_apply_binary(const matrix_t *A, const matrix_t *B, matrix_t *result,
-                            double (*op)(double, double, double), double param);
-
-    /**
-    * @brief Применение унарной операции к элементам матрицы
-    */
-
-    int matrix_apply_unary(const matrix_t *A, matrix_t *result,
-                        double (*op)(double, double), double param);
-
-    /**
- * @brief Проверка корректности матрицы (возвращает S21_OK/S21_INCORRECT_MATRIX)
- * @param A указатель на матрицу
- * @return S21_OK - корректна, S21_INCORRECT_MATRIX - некорректна
- */
-int checking_arg(const matrix_t* A);
+int matrix_apply_unary(const matrix_t *A, matrix_t *result,
+                       double (*op)(double));
 
 /**
- * @brief Копирование матрицы (целевая уже должна быть создана)
- * @param src исходная матрица
- * @param dst целевая матрица
- * @return S21_OK - успех, S21_INCORRECT_MATRIX - ошибка
+ * @brief Применение унарной операции с параметром
+ * @param A исходная матрица
+ * @param result результат операции
+ * @param op указатель на функцию операции (a, param) -> значение
+ * @param param параметр операции
+ * @return S21_OK, S21_INCORRECT_MATRIX
  */
-int s21_copy_matrix(const matrix_t* src, matrix_t* dst);
+int matrix_apply_unary_with_param(const matrix_t *A, matrix_t *result,
+                                  double (*op)(double, double), double param);
+
+// ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
 
 /**
  * @brief Создание двух матриц с откатом при ошибке
@@ -118,24 +63,23 @@ int s21_copy_matrix(const matrix_t* src, matrix_t* dst);
  * @param A указатель на первую матрицу
  * @param b_rows, b_cols размеры матрицы B
  * @param B указатель на вторую матрицу
- * @return S21_OK - успех, S21_INCORRECT_MATRIX - ошибка
+ * @return S21_OK - успех, иначе ошибка (с очисткой)
  */
-int two_matrix_create(const int a_rows, const int a_cols, matrix_t* A,
-                      const int b_rows, const int b_cols, matrix_t* B);
+int two_matrix_create(int a_rows, int a_cols, matrix_t *A,
+                      int b_rows, int b_cols, matrix_t *B);
 
 /**
- * @brief Сравнение матриц с заданной точностью
- * @param A первая матрица
- * @param B вторая матрица
- * @param eps точность сравнения
- * @return 1 - равны, 0 - не равны
+ * @brief Копирование матрицы (dst уже должна быть создана)
+ * @param src исходная матрица
+ * @param dst целевая матрица
+ * @return S21_OK, S21_INCORRECT_MATRIX
  */
-int s21_eq_matrix_with_eps(const matrix_t *A, const matrix_t *B, double eps);
+int s21_copy_matrix(const matrix_t *src, matrix_t *dst);
 
 /**
  * @brief Заполнение всех элементов матрицы значением
  * @param A матрица
- * @param value значение для заполнения
+ * @param value значение
  */
 void s21_fill_matrix(matrix_t *A, double value);
 
@@ -144,5 +88,33 @@ void s21_fill_matrix(matrix_t *A, double value);
  * @param A матрица
  */
 void s21_zero_matrix(matrix_t *A);
+
+// ==================== ВНУТРЕННИЕ ФУНКЦИИ ДЛЯ ОПРЕДЕЛИТЕЛЯ ====================
+
+/**
+ * @brief Рекурсивное вычисление определителя (только для n <= S21_MAX_RECURS)
+ * @param data указатель на данные матрицы (row-major)
+ * @param n размер матрицы
+ * @param result указатель на результат
+ * @return S21_OK, S21_CALC_ERROR
+ */
+int determinant_recursive_stack(const double *data, int n, double *result);
+
+/**
+ * @brief Рекурсивное вычисление определителя с динамической памятью
+ * @param data указатель на данные матрицы (row-major)
+ * @param n размер матрицы
+ * @param result указатель на результат
+ * @return S21_OK, S21_CALC_ERROR
+ */
+int determinant_recursive_dynamic(const double *data, int n, double *result);
+
+/**
+ * @brief Вычисление определителя методом LU-разложения (для больших матриц)
+ * @param A исходная матрица
+ * @param result указатель на результат
+ * @return S21_OK, S21_CALC_ERROR
+ */
+int determinant_lu(const matrix_t *A, double *result);
 
 #endif // S21_MATRIX_PRIVATE_H

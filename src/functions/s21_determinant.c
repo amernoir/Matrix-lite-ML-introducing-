@@ -6,12 +6,12 @@
 
 #include "../s21_matrix.h"
 
-static int determinant_recursive_dynamic(const double *data, int n, double *result);
+ int determinant_recursive_dynamic(const double *data, int n, double *result);
 /**
     @brief тривиальные случаи n=1,2,3  fast paths или special case handlers
 */
 
-static int try_trivial_determinant_array(const double *data, int n, double *result) {
+ int try_trivial_determinant_array(const double *data, int n, double *result) {
     int flag = FAILURE;
     if (n == 0) {
         *result = 1.0;
@@ -39,7 +39,7 @@ static int try_trivial_determinant_array(const double *data, int n, double *resu
     @brief calculate matrix minor by use VLA(only for small depth, n <= S21_MAX_STACK)
     @note realization should be without create_matrix function due to extra malloc
 */
-static int determinant_recursive_stack(const double *data, int n, double *result) {
+ int determinant_recursive_stack(const double *data, int n, double *result) {
     int flag = S21_OK;
 
     if (try_trivial_determinant_array(data,n,result)) {
@@ -81,7 +81,7 @@ static int determinant_recursive_stack(const double *data, int n, double *result
     @note use S21_MAX_RECURS constat to limit depth of recurs
 */
 
-static int determinant_recursive_dynamic(const double  *data, int n, double *result) {
+ int determinant_recursive_dynamic(const double  *data, int n, double *result) {
     int flag = S21_OK;
 
     if (try_trivial_determinant_array(data, n, result)) {
@@ -133,7 +133,7 @@ static int determinant_recursive_dynamic(const double  *data, int n, double *res
 
 */
 
-static int determinant_lu(const matrix_t *A, double *result) {
+ int determinant_lu(const matrix_t *A, double *result) {
     int n = A->rows;
     
     // Создаем копию матрицы
@@ -166,7 +166,6 @@ static int determinant_lu(const matrix_t *A, double *result) {
             return S21_OK;
         }
         
-        // Перестановка строк
         if (max_row != k) {
             swap_count++;
             for (int j = 0; j < n; j++) {
@@ -202,27 +201,41 @@ static int determinant_lu(const matrix_t *A, double *result) {
  * @brief Основная функция вычисления определителя
  */
 
- int s21_determinant(const matrix_t *A, double *result) {
+int s21_determinant(const matrix_t *A, double *result) {
+    int status = S21_OK;
+    
     if (checking_arg(A) != S21_OK || result == NULL) {
-        return S21_INCORRECT_MATRIX;
+        status = S21_INCORRECT_MATRIX;
     }
 
-    if (A->rows != A->columns) {
-        return S21_CALC_ERROR;
+    else if (A->rows != A->columns) {
+        status = S21_CALC_ERROR;
     }
-
-    int n = A->rows;
-
-    if (n < 4) {
-        if (try_trivial_determinant_array(A->data, n, result)) {
-            return S21_OK;
+    else {
+        int n = A->rows;
+        
+        if (n < 4) {
+            if (!try_trivial_determinant_array(A->data, n, result)) {
+                status = S21_CALC_ERROR;
+            }
         }
-        return S21_CALC_ERROR;
-    } else if (n <= S21_MAX_RECURS) {
-        if (n <= S21_MAX_STACK) {
-            return determinant_recursive_stack(A->data, n, result);
-        } else {
-            return determinant_recursive_dynamic(A->data, n, result);
+        else if (n <= S21_MAX_RECURS) {
+            if (n <= S21_MAX_STACK) {
+                if (determinant_recursive_stack(A->data, n, result) != S21_OK) {
+                    status = S21_CALC_ERROR;
+                }
+            } else {
+                if (determinant_recursive_dynamic(A->data, n, result) != S21_OK) {
+                    status = S21_CALC_ERROR;
+                }
+            }
         }
-    } else return determinant_lu(A, result);
- }
+        else {
+            if (determinant_lu(A, result) != S21_OK) {
+                status = S21_CALC_ERROR;
+            }
+        }
+    }
+    
+    return status;
+}
