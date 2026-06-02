@@ -118,3 +118,13 @@ int determinant_recursive_dynamic(const double *data, int n, double *result);
 int determinant_lu(const matrix_t *A, double *result);
 
 #endif // S21_MATRIX_PRIVATE_H
+
+/**
+ * @brief Вычисление минора матрицы (определитель подматрицы)
+ * @param A исходная квадратная матрица
+ * @param row строка для удаления
+ * @param col столбец для удаления
+ * @param result указатель на результат (определитель минора)
+ * @return S21_OK - успех, S21_INCORRECT_MATRIX - ошибка, S21_CALC_ERROR - ошибка вычисления
+ */
+int s21_matrix_minor(const matrix_t *A, int row, int col, double *result);
