@@ -1,3 +1,8 @@
+/**
+    @file s21_create_matrix.c
+    @brief create new matrix
+*/
+
 #include "../s21_matrix.h"
 
 int s21_create_matrix(int rows, int columns, matrix_t *result) {
@@ -5,7 +10,6 @@ int s21_create_matrix(int rows, int columns, matrix_t *result) {
         return S21_INCORRECT_MATRIX;
     }
 
-    // Если матрица уже содержит данные, очищаем их
     if (result->data != NULL) {
         s21_remove_matrix(result);
     }

@@ -3,11 +3,6 @@
  * @brief Вычисление матрицы алгебраических дополнений
  */
 
-/**
- * @file s21_calc_complements.c
- * @brief Вычисление матрицы алгебраических дополнений
- */
-
 #include "../s21_matrix.h"
 
 int s21_calc_complements(const matrix_t *A, matrix_t *result) {

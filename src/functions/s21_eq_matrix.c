@@ -1,6 +1,6 @@
 /**
  * @file eq_matrix.c
- * @brief Реализация функции сравнения матриц
+ * @brief equal function
  */
 
 #include "../s21_matrix.h"
