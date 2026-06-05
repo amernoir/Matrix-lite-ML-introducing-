@@ -29,10 +29,10 @@ test: $(TEST_NAME)
 	./$(TEST_NAME)
 
 gcov_report: CFLAGS += -fprofile-arcs -ftest-coverage
-gcov_report: clean $(TEST_SRC) $(LIB_SRCS)
+gcov_report: clean
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIB_SRCS) $(TEST_SRC) -o $(TEST_NAME) $(CHECK_FLAGS)
 	./$(TEST_NAME)
-	lcov -t "$(TEST_NAME)" -o $(TEST_NAME).info -c -d $(SRC_DIR)
+	lcov -t "$(TEST_NAME)" -o $(TEST_NAME).info -c -d $(SRC_DIR) --ignore-errors mismatch
 	genhtml -o report $(TEST_NAME).info
 	rm -f *.gcda *.gcno
 

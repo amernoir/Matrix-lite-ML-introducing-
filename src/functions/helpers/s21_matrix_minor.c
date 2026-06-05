@@ -8,7 +8,6 @@
 int s21_matrix_minor(const matrix_t *A, int row, int col, double *result) {
     int status = S21_OK;
     
-    // Проверка входных данных
     if (checking_arg(A) != S21_OK || result == NULL) {
         status = S21_INCORRECT_MATRIX;
     } else if (A->rows != A->columns) {
@@ -28,14 +27,13 @@ int s21_matrix_minor(const matrix_t *A, int row, int col, double *result) {
             if (s21_create_matrix(minor_size, minor_size, &minor) != S21_OK) {
                 status = S21_INCORRECT_MATRIX;
             } else {
-                // Заполнение матрицы минора (удаляем строку row и столбец col)
                 int minor_i = 0;
                 for (int i = 0; i < n && status == S21_OK; ++i) {
-                    // Пропускаем удаляемую строку
+                    // skipping
                     if (i != row) {
                         int minor_j = 0;
                         for (int j = 0; j < n; ++j) {
-                            // Пропускаем удаляемый столбец
+                            // skipping
                             if (j != col) {
                                 minor.data[minor_i * minor_size + minor_j] = A->data[i * n + j];
                                 minor_j++;
@@ -45,7 +43,6 @@ int s21_matrix_minor(const matrix_t *A, int row, int col, double *result) {
                     }
                 }
                 
-                // Вычисляем определитель минора
                 status = s21_determinant(&minor, result);
                 s21_remove_matrix(&minor);
             }
