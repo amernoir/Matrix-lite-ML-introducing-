@@ -1,57 +1,43 @@
-# src/Makefile
-
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -std=c11 -g
+CFLAGS = -Wall -Werror -Wextra -std=c11 -g -fPIC
 AR = ar
 ARFLAGS = rcs
 RM = rm -f
 
-# Имя библиотеки
 LIB_NAME = s21_matrix.a
+LIB_SO = s21_matrix.so
 
-# Пути
 FUNCTIONS_DIR = functions
 HELPERS_DIR = functions/helpers
 INCLUDES_DIR = include
 
-# Заголовочные файлы
 INCLUDES = -I$(INCLUDES_DIR) -I.
 
-# Поиск всех .c файлов
 SRCS = $(wildcard $(FUNCTIONS_DIR)/*.c) $(wildcard $(HELPERS_DIR)/*.c)
+SRCS_NO_MAIN = $(filter-out $(FUNCTIONS_DIR)/main.c, $(SRCS))
 
-# Объектные файлы (с сохранением структуры)
-OBJS = $(patsubst %.c,%.o,$(SRCS))
+OBJS = $(patsubst %.c,%.o,$(SRCS_NO_MAIN))
+OBJS_ALL = $(patsubst %.c,%.o,$(SRCS))
 
-# Цель по умолчанию
+BLAS_CFLAGS = -DHAVE_BLAS
+BLAS_LDFLAGS = -lcblas -lopenblas
+
 all: $(LIB_NAME)
 
-# Сборка статической библиотеки
 $(LIB_NAME): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 
-# Компиляция .c в .o
+$(LIB_SO): $(OBJS)
+	$(CC) -shared -o $@ $^ $(BLAS_LDFLAGS) -lm
+
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Очистка
 clean:
-	$(RM) $(OBJS) $(LIB_NAME)
+	$(RM) $(OBJS) $(OBJS_ALL) $(LIB_NAME) $(LIB_SO)
 
-# Полная очистка
 fclean: clean
-	$(RM) -rf report *.gcda *.gcno *.info
-	$(MAKE) -C tests clean
 
-# Запуск тестов
-test:
-	$(MAKE) -C tests test
-
-# Генерация отчёта о покрытии
-gcov_report:
-	$(MAKE) -C tests gcov_report
-
-# Пересборка
 re: fclean all
 
-.PHONY: all clean fclean test gcov_report re valgrind valgrind-verbose valgrind-log
+.PHONY: all clean fclean re blas

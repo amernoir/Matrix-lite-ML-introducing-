@@ -7,8 +7,14 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "../s21_matrix.h"
 #include <math.h>
+
+// Forward declaration
+typedef struct matrix {
+    double *data;
+    int rows;
+    int columns;
+} matrix_t;
 
 // ==================== БАЗОВЫЕ ОПЕРАЦИИ ДЛЯ APPLY ====================
 
